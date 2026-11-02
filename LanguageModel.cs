@@ -31,6 +31,32 @@ namespace BerdyGPT
             return lmHead.forward(finalNormalization);
         }
 
+        public int[] Generate(int[] promptTokens, int maxReplyTokens, int eosToken, Device device)
+        {
+            eval();
+
+            using var _ = no_grad();
+
+            var sequence = new List<int>(promptTokens);
+
+            for (int i = 0; i < maxReplyTokens; i++)
+            {
+                using var scope = NewDisposeScope();
+
+                var input = tensor(sequence.ToArray(), ScalarType.Int64, device: device).unsqueeze(0);
+
+                var logits = forward(input);
+
+                var next = (int)logits[0, -1].argmax().item<long>();
+
+                if (next == eosToken) break;
+
+                sequence.Add(next);
+            }
+
+            return sequence.ToArray();
+        }
+
         public LanguageModel(int embeddingSize, int headsCount, int ffnSize, int blocksCount) : base(nameof(LanguageModel))
         {
             EmbeddingSize = embeddingSize;
