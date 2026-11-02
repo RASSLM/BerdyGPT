@@ -3,20 +3,10 @@
 class Program
 {
     private static readonly Tokenizer tokenizer = new Tokenizer();
+    private static LanguageModel model;
 
     static void Main(string[] args)
     {
-        Console.Write(">");
 
-        string? input = Console.ReadLine();
-
-        IReadOnlyCollection<int> tokensIds = tokenizer.Encode(input!);
-
-        foreach (var tokenId in tokensIds)
-        {
-            Console.Write(string.Join(",", tokenId));
-        }
-
-        Console.WriteLine(tokenizer.Decode(tokensIds));
     }
 }
